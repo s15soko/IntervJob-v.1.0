@@ -13,7 +13,7 @@
 
 Route::get('/', "ExcelFileController@index");
 
-Route::get("/create", "ExcelFileController@create");
+Route::get("/create", "ExcelFileController@create")->name("create");
 Route::post("/store", "ExcelFileController@store");
 
 Route::post("/update", "ExcelFileController@update");
