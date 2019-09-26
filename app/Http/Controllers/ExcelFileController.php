@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\ExcelFileConverterController;
 
 class ExcelFileController extends Controller
 {
@@ -67,7 +68,7 @@ class ExcelFileController extends Controller
             Session::flash('message', "Wrong file type"); 
             return redirect()->back();
         }
-
+        
         try {  
             // store to default laravel storage place
             $uploadedFile->storeAs("files/excel", "myExcelFile.xlsx");
@@ -181,5 +182,34 @@ class ExcelFileController extends Controller
         }
 
         return $searchedRow;
+    }
+
+    /**
+     * Convert excel file to pdf 
+     */
+    public function convertToPDF()
+    {
+        $fileStoragePath = self::getLocalStorageFullFilesPath(); 
+
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fileStoragePath . "/excel/myExcelFile.xlsx");
+        $fileRows = $spreadsheet->getActiveSheet()->toArray();
+
+        // pdf structure
+        $htmlData = "<html><body><table>";
+        foreach ($fileRows as $key => $row) {
+            $htmlData .= "<tr>";
+            foreach ($row as $key => $line) {
+                $htmlData .= "<td>$line</td>";
+            }
+            $htmlData .= "/<tr>";
+        }
+        $htmlData .= "</table></body></html>";
+        
+        if(ExcelFileConverterController::convertToPDFAndSave($htmlData, "", ($fileStoragePath . "pdf/"), "myPdfFile.pdf"))
+            Session::flash('message', "File has been converted successfully"); 
+        else
+            Session::flash('message', "File conversion has been failed"); 
+
+        return redirect("/");
     }
 }
