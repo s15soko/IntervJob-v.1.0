@@ -109,6 +109,7 @@ class ExcelFileController extends Controller
             $rows = $worksheet->toArray();
 
             $key = $request->key;
+            
             $data = $this->getRowDataByLpKey($rows, $key);
 
             if($data == []){
@@ -152,7 +153,7 @@ class ExcelFileController extends Controller
             // Assumption that Lp. == A1 
             $CellLpKey = $request->key + 1; // (skip header row)
 
-            if($this->getRowDataByLpKey($rows, $CellLpKey) == []){
+            if($this->getRowDataByLpKey($rows, $request->key) == []){
                 Session::flash('message', "This field does not exists"); 
                 return redirect()->back();
             }
@@ -183,7 +184,7 @@ class ExcelFileController extends Controller
     private function getRowDataByLpKey($arrayData, int $rowKey)
     {
         $searchedRow = [];
-    
+
         foreach ($arrayData as $key => $row) {
             if($row[0] == $rowKey){
                 $searchedRow = $row;
