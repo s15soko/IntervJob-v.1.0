@@ -12,5 +12,9 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('excel.index');
 });
+
+Route::get("/create", "ExcelFileController@create");
+Route::post("/store", "ExcelFileController@store");
+
