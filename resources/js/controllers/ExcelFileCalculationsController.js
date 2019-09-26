@@ -15,6 +15,9 @@ export class ExcelFileCalculationsController
         this.events();
     }
 
+    /**
+     * Count data and prepare elements to build
+     */
     startCounting()
     {
         var tableElements = $("#tableExcelContent").find("tr");
@@ -63,10 +66,14 @@ export class ExcelFileCalculationsController
             
         });
 
-
         this.buildResultView(list);
     }
 
+    /**
+     * Show counted data
+     * 
+     * @param {object} list 
+     */
     buildResultView(list)
     {
         if(document.getElementById("calculationsResultContainer"))

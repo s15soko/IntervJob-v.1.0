@@ -73,6 +73,7 @@ class ExcelFileController extends Controller
             // store to default laravel storage place
             $uploadedFile->storeAs("files/excel", "myExcelFile.xlsx");
 
+            Session::flash('message', "File has been added"); 
             return redirect("/");
 
         } catch (\Throwable $th) {
@@ -109,6 +110,7 @@ class ExcelFileController extends Controller
 
             $key = $request->key;
             $data = $this->getRowDataByLpKey($rows, $key);
+
             if($data == []){
                 Session::flash('message', "Record not found"); 
                 return redirect()->back();
@@ -163,6 +165,7 @@ class ExcelFileController extends Controller
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
             $writer->save($fileStoragePath . "/excel/myExcelFile.xlsx");
 
+            Session::flash('message', "Data has been changed"); 
             return redirect("/");
 
         } catch (\Throwable $th) {
