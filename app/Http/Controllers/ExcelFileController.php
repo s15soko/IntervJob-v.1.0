@@ -68,7 +68,7 @@ class ExcelFileController extends Controller
             Session::flash('message', "Wrong file type"); 
             return redirect()->back();
         }
-        
+
         try {  
             // store to default laravel storage place
             $uploadedFile->storeAs("files/excel", "myExcelFile.xlsx");
@@ -195,7 +195,7 @@ class ExcelFileController extends Controller
         $fileRows = $spreadsheet->getActiveSheet()->toArray();
 
         // pdf structure
-        $htmlData = "<html><body><table>";
+        $htmlData = "<html><div><body><table>";
         foreach ($fileRows as $key => $row) {
             $htmlData .= "<tr>";
             foreach ($row as $key => $line) {
@@ -203,9 +203,11 @@ class ExcelFileController extends Controller
             }
             $htmlData .= "/<tr>";
         }
-        $htmlData .= "</table></body></html>";
-        
-        if(ExcelFileConverterController::convertToPDFAndSave($htmlData, "", ($fileStoragePath . "pdf/"), "myPdfFile.pdf"))
+        $htmlData .= "</table></div></body></html>";
+
+        $styles = file_get_contents(dirname(__FILE__) . "/../../../resources/filesstyles/pdf/default.css");
+
+        if(ExcelFileConverterController::convertToPDFAndSave($htmlData, $styles, ($fileStoragePath . "pdf/"), "myPdfFile.pdf"))
             Session::flash('message', "File has been converted successfully"); 
         else
             Session::flash('message', "File conversion has been failed"); 
