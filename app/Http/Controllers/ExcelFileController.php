@@ -123,9 +123,44 @@ class ExcelFileController extends Controller
         }
     }
 
-    public function update()
+    public function update(Request $request)
     {
+        $validatedData = Validator::make($request->all(),
+        [
+            'key' => 'required|integer',
+            'figure_name' => 'required',
+            'enthusiasm' => 'integer',
+            'creativity' => 'integer',
+            'brilliance' => 'integer',
+        ]);
+
+        if ($validatedData->fails()) {
+            Session::flash('message', $validatedData->messages()->first()); 
+            return redirect()->back();
+        }
         
+        $fileStoragePath = self::getLocalStorageFullFilesPath();    
+        
+        try {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fileStoragePath . "/excel/myExcelFile.xlsx");
+            
+            // Assumption that Lp. == A1 
+            $CellLpKey = $request->key + 1; // (skip header row)
+
+            $spreadsheet->getActiveSheet()->getCell("B".$CellLpKey)->setValue($request->figure_name);
+            $spreadsheet->getActiveSheet()->getCell("C".$CellLpKey)->setValue($request->enthusiasm);
+            $spreadsheet->getActiveSheet()->getCell("D".$CellLpKey)->setValue($request->creativity);
+            $spreadsheet->getActiveSheet()->getCell("E".$CellLpKey)->setValue($request->brilliance);
+            
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            $writer->save($fileStoragePath . "/excel/myExcelFile.xlsx");
+
+            return redirect("/");
+
+        } catch (\Throwable $th) {
+            Session::flash('message', "Updating has been failed"); 
+            return redirect()->back();
+        }
     }
 
     /**
