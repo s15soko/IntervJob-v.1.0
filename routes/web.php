@@ -19,4 +19,5 @@ Route::post("/store", "ExcelFileController@store");
 Route::post("/update", "ExcelFileController@update");
 Route::get("/edit/{key}", "ExcelFileController@edit");
 
-Route::post("/convert", "ExcelFileController@convertToPDF");
+Route::post("/convert", "ExcelFileController@convertToPDFAndSave");
+Route::post("/convert/download", "ExcelFileController@convertToPDFAndDownload");

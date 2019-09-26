@@ -36,6 +36,11 @@
                 <button type="submit" class="btn btn-primary">Konwertuj</button>
             </form>
 
+            <form method="POST" action={{URL::to("/convert/download")}}>
+                @csrf
+                <button type="submit" class="btn btn-primary">Konwertuj i pobierz</button>
+            </form>
+
             <a href="{{ route('create') }}">
                 <button type="submit" class="btn btn-primary">Dodaj nowy plik</button>
             </a>

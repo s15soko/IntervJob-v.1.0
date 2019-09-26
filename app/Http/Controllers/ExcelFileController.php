@@ -20,7 +20,7 @@ class ExcelFileController extends Controller
 
     public static function getLocalStorageFullFilesPath()
     {
-        return \dirname(__FILE__) . "/../../../storage/app/files/";;
+        return storage_path("app/files/");
     }
 
     /**
@@ -196,20 +196,12 @@ class ExcelFileController extends Controller
     }
 
     /**
-     * Convert excel file to pdf 
+     * @param array $fileRows
+     * 
+     * @return array
      */
-    public function convertToPDF()
+    private function createPDFStructure($fileRows)
     {
-        $fileStoragePath = self::getLocalStorageFullFilesPath(); 
-
-        if(!file_exists($fileStoragePath . "/excel/myExcelFile.xlsx")){
-            Session::flash('message', "Excel file does not exist"); 
-            return redirect("/");
-        }
-
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fileStoragePath . "/excel/myExcelFile.xlsx");
-        $fileRows = $spreadsheet->getActiveSheet()->toArray();
-
         // pdf structure
         $htmlData = "<html><div><body><table>";
         foreach ($fileRows as $key => $row) {
@@ -221,13 +213,62 @@ class ExcelFileController extends Controller
         }
         $htmlData .= "</table></div></body></html>";
 
-        $styles = file_get_contents(dirname(__FILE__) . "/../../../resources/filesstyles/pdf/default.css");
+        return $htmlData;
+    }
 
-        $flag = ExcelFileConverterController::convertToPDFAndSave($htmlData, $styles, ($fileStoragePath . "pdf/"), "myPdfFile.pdf");
-        if($flag === true)
+    private function getPDFStyles()
+    {
+        return file_get_contents(dirname(__FILE__) . "/../../../resources/filesstyles/pdf/default.css");
+    }
+
+    /**
+     * Convert excel file to pdf and save on disk
+     */
+    public function convertToPDFAndSave()
+    {
+        $fileStoragePath = self::getLocalStorageFullFilesPath(); 
+
+        if(!file_exists($fileStoragePath . "/excel/myExcelFile.xlsx")){
+            Session::flash('message', "Excel file does not exist"); 
+            return redirect("/");
+        }
+
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fileStoragePath . "/excel/myExcelFile.xlsx");
+        $fileRows = $spreadsheet->getActiveSheet()->toArray();
+  
+        $htmlData = $this->createPDFStructure($fileRows);
+        $styles = $this->getPDFStyles();
+
+        if(ExcelFileConverterController::convertToPDFAndSave($htmlData, $styles, ($fileStoragePath . "pdf/"), "myPdfFile.pdf"))
             Session::flash('message', "File has been converted successfully"); 
         else
-            Session::flash('message', $flag); 
+            Session::flash('message', "File converting has been failed"); 
+
+        return redirect("/");
+    }
+
+    /**
+     * Download PDF file after convert
+     */
+    public function convertToPDFAndDownload()
+    {
+        $fileStoragePath = self::getLocalStorageFullFilesPath(); 
+
+        if(!file_exists($fileStoragePath . "/excel/myExcelFile.xlsx")){
+            Session::flash('message', "Excel file does not exist"); 
+            return redirect("/");
+        }
+
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fileStoragePath . "/excel/myExcelFile.xlsx");
+        $fileRows = $spreadsheet->getActiveSheet()->toArray();
+  
+        $htmlData = $this->createPDFStructure($fileRows);
+        $styles = $this->getPDFStyles();
+
+        if(ExcelFileConverterController::convertToPDFAndDownload($htmlData, $styles, "myPdfFile.pdf"))
+            Session::flash('message', "File has been converted successfully"); 
+        else
+            Session::flash('message', "File converting has been failed"); 
 
         return redirect("/");
     }
