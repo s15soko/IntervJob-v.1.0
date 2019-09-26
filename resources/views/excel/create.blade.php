@@ -17,8 +17,8 @@
         <form method="POST" action={{URL::to("/store")}} enctype="multipart/form-data">
 
             <div class="form-group">
-                <label>File</label>
-                <input class="form-control-file" type="file" name="file"/>
+                <label for="inputFile">Wrzuć plik</label>
+                <input id="inputFile" class="form-control-file" type="file" name="file"/>
             </div>
 
             @if(Session::has('message'))
@@ -26,7 +26,7 @@
             @endif
 
             @csrf
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary btn-sm">Dodaj</button>
 
         </form>
 
