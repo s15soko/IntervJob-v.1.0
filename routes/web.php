@@ -11,10 +11,10 @@
 |
 */
 
-Route::get('/', function () {
-    return view('excel.index');
-});
+Route::get('/', "ExcelFileController@index");
 
 Route::get("/create", "ExcelFileController@create");
 Route::post("/store", "ExcelFileController@store");
 
+Route::post("/update", "ExcelFileController@update");
+Route::get("/edit/{key}", "ExcelFileController@edit");
