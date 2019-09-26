@@ -17,12 +17,31 @@ class ExcelFileController extends Controller
         return $allowedFileType;
     }
 
+    public static function getLocalStorageFullFilesPath()
+    {
+        return \dirname(__FILE__) . "/../../../storage/app/files/";;
+    }
+
     /**
-     * Display a file content (if exist)
+     * Return view with file content (or with out if not exist)
+     * 
+     * @return array
      */
     public function index()
     {
+        $fileStoragePath = self::getLocalStorageFullFilesPath();
 
+        $data = [];
+
+        if(file_exists($fileStoragePath . "/excel/myExcelFile.xlsx")){
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fileStoragePath . "/excel/myExcelFile.xlsx");
+
+            $worksheet = $spreadsheet->getActiveSheet();
+            $data = $worksheet->toArray();
+        }
+        
+        return view('excel.index')
+           ->with("collection", $data);
     }
 
     /**
