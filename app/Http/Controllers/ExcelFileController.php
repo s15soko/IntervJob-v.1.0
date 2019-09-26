@@ -144,8 +144,16 @@ class ExcelFileController extends Controller
         try {
             $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fileStoragePath . "/excel/myExcelFile.xlsx");
             
+            $worksheet = $spreadsheet->getActiveSheet();
+            $rows = $worksheet->toArray();
+
             // Assumption that Lp. == A1 
             $CellLpKey = $request->key + 1; // (skip header row)
+
+            if($this->getRowDataByLpKey($rows, $CellLpKey) == []){
+                Session::flash('message', "This field does not exists"); 
+                return redirect()->back();
+            }
 
             $spreadsheet->getActiveSheet()->getCell("B".$CellLpKey)->setValue($request->figure_name);
             $spreadsheet->getActiveSheet()->getCell("C".$CellLpKey)->setValue($request->enthusiasm);
