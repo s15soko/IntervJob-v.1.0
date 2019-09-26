@@ -43,6 +43,13 @@
 
         </form>
 
+        <h3>Pokaż stan po</h3>
+        <div class="form-group" style="margin-top: 14px;">
+            <label for="partyNumber">Liczba imprez z HXS</label>
+            <input type="number" class="form-control" id="partyNumber" placeholder="Wpisz wartość">
+        </div>
+        <button class="btn btn-secondary">Wykonaj obliczenia</button>
+
     </div>
 
 @endsection
