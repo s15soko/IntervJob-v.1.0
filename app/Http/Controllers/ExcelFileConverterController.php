@@ -15,7 +15,7 @@ class ExcelFileConverterController extends Controller
      * @return bool
      * || if true file has been saved on system disk
      */
-    public static function convertToPDFAndSave($HTML_BODY, $STYLES_SHEET, $placeToSave, $saveAs): bool
+    public static function convertToPDFAndSave($HTML_BODY, $STYLES_SHEET, $placeToSave, $saveAs)
     {
         try {
             $mpdf = new \Mpdf\Mpdf();
@@ -26,6 +26,7 @@ class ExcelFileConverterController extends Controller
             $mpdf->Output($placeToSave . $saveAs, "F");
             return true;
         } catch (\Throwable $th) {
+            return $th->getMessage();
             return false;
         }
     }

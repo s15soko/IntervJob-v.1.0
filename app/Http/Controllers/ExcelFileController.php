@@ -223,10 +223,11 @@ class ExcelFileController extends Controller
 
         $styles = file_get_contents(dirname(__FILE__) . "/../../../resources/filesstyles/pdf/default.css");
 
-        if(ExcelFileConverterController::convertToPDFAndSave($htmlData, $styles, ($fileStoragePath . "pdf/"), "myPdfFile.pdf"))
+        $flag = ExcelFileConverterController::convertToPDFAndSave($htmlData, $styles, ($fileStoragePath . "pdf/"), "myPdfFile.pdf");
+        if($flag === true)
             Session::flash('message', "File has been converted successfully"); 
         else
-            Session::flash('message', "File conversion has been failed"); 
+            Session::flash('message', $flag); 
 
         return redirect("/");
     }
