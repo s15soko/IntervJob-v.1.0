@@ -81,7 +81,6 @@ class ExcelFileController extends Controller
         }
     }
 
-
     /**
      * Show form for editing the specified resource.
      * If nothing found redirect back
@@ -190,6 +189,11 @@ class ExcelFileController extends Controller
     public function convertToPDF()
     {
         $fileStoragePath = self::getLocalStorageFullFilesPath(); 
+
+        if(!file_exists($fileStoragePath . "/excel/myExcelFile.xlsx")){
+            Session::flash('message', "Excel file does not exist"); 
+            return redirect("/");
+        }
 
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fileStoragePath . "/excel/myExcelFile.xlsx");
         $fileRows = $spreadsheet->getActiveSheet()->toArray();
