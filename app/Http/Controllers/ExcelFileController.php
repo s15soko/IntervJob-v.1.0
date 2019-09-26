@@ -83,14 +83,68 @@ class ExcelFileController extends Controller
 
     /**
      * Show form for editing the specified resource.
+     * If nothing found redirect back
+     * 
+     * @return array
      */
     public function edit(Request $request)
     {
+        $params = $request->route()->parameters();
+
+        $validatedData = Validator::make($params,[
+            'key' => 'required|integer',
+        ]);
+
+        if ($validatedData->fails()) {
+            Session::flash('message', $validatedData->messages()->first()); 
+            return redirect()->back();
+        }
+
+        $fileStoragePath = self::getLocalStorageFullFilesPath();   
         
+        try {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fileStoragePath . "/excel/myExcelFile.xlsx");
+            $worksheet = $spreadsheet->getActiveSheet();
+            $rows = $worksheet->toArray();
+
+            $key = $request->key;
+            $data = $this->getRowDataByLpKey($rows, $key);
+            if($data == []){
+                Session::flash('message', "Record not found"); 
+                return redirect()->back();
+            }
+
+            return view('excel.edit')
+                ->with("collection", $data);
+
+        } catch (\Throwable $th) {
+            Session::flash('message', "Sorry something went wrong"); 
+            return redirect()->back();
+        }
     }
 
     public function update()
     {
         
+    }
+
+    /**
+     * @param array $arrayData
+     * @param int $rowKey
+     * 
+     * @return array
+     */
+    private function getRowDataByLpKey($arrayData, int $rowKey)
+    {
+        $searchedRow = [];
+    
+        foreach ($arrayData as $key => $row) {
+            if($row[0] == $rowKey){
+                $searchedRow = $row;
+                break;
+            }
+        }
+
+        return $searchedRow;
     }
 }
